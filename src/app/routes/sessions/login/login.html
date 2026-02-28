@@ -1,0 +1,76 @@
+<div class="d-flex w-full h-full">
+  <mat-card class="m-auto" style="max-width: 420px; width: 100%">
+    <mat-card-header class="m-b-24">
+      <mat-card-title>👋 Iniciar sesión</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="form-field-full" [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" placeholder="tu@email.com" formControlName="email" />
+          @if (email.invalid && (email.dirty || email.touched)) {
+            <mat-error>
+              @if (email.errors?.['required']) { <span>Email es requerido</span> }
+              @if (email.errors?.['email']) { <span>Formato de email inválido</span> }
+              @if (email.errors?.['remote']) { <span>{{ email.errors?.['remote'] }}</span> }
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            placeholder="********"
+            formControlName="password"
+          />
+
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="'Mostrar/Ocultar contraseña'"
+          >
+            <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+
+          @if (password.invalid && (password.dirty || password.touched)) {
+            <mat-error>
+              @if (password.errors?.['required']) { <span>Contraseña es requerida</span> }
+              @if (password.errors?.['remote']) { <span>{{ password.errors?.['remote'] }}</span> }
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <div class="d-flex align-items-center justify-content-between m-y-8">
+          <mat-checkbox formControlName="rememberMe">Recordarme</mat-checkbox>
+          <a routerLink="/reset-password">Restablecer</a>
+        </div>
+
+        <button
+          class="w-full m-y-16"
+          matButton="filled"
+          type="submit"
+          [disabled]="loginForm.invalid || isSubmitting"
+          [loading]="isSubmitting"
+        >
+          Ingresar
+        </button>
+
+        @if (loginError) {
+          <div class="m-t-8">
+            <mat-error>{{ loginError }}</mat-error>
+          </div>
+        }
+
+        <div class="m-t-16">
+          <span>¿No tienes cuenta?</span>
+          <a routerLink="/register"> Regístrate</a>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

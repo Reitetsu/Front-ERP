@@ -13,7 +13,34 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "baseUrl": "./",
+    "paths": {
+      "@core": [
+        "src/app/core"
+      ],
+      "@core/*": [
+        "src/app/core/*"
+      ],
+      "@shared": [
+        "src/app/shared"
+      ],
+      "@shared/*": [
+        "src/app/shared/*"
+      ],
+      "@theme": [
+        "src/app/theme"
+      ],
+      "@theme/*": [
+        "src/app/theme/*"
+      ],
+      "@env": [
+        "src/environments"
+      ],
+      "@env/*": [
+        "src/environments/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
