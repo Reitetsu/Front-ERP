@@ -34,9 +34,10 @@ export class TranslateButton {
   options = this.settings.options;
 
   langs = [
+    { value: 'es-PE', name: 'Español' },
     { value: 'en-US', name: 'English' },
-    { value: 'zh-CN', name: '中文简体' },
-    { value: 'zh-TW', name: '中文繁体' },
+    //{ value: 'zh-CN', name: '中文简体' },
+    //{ value: 'zh-TW', name: '中文繁体' },
     { value: 'auto', name: 'system' },
   ];
 

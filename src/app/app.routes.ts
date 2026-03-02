@@ -21,6 +21,10 @@ export const routes: Routes = [
       { path: '403', component: Error403 },
       { path: '404', component: Error404 },
       { path: '500', component: Error500 },
+            {
+        path: 'profile',
+        loadChildren: () => import('./routes/profile/profile.routes').then(m => m.routes),
+      },
     ],
   },
   {
