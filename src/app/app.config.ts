@@ -32,8 +32,6 @@ import { environment } from '@env/environment';
 import { formlyConfigFactory, PaginatorI18nService } from '@shared';
 import { routes } from './app.routes';
 
-import { LoginService } from '@core/authentication/login.service';
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -57,7 +55,7 @@ export const appConfig: ApplicationConfig = {
     // ==================================================
     // 👇 ❌ Remove it in the realworld application
     //
-    
+
     //
     // ==================================================
     provideFormlyCore([...withFormlyMaterial()]),
