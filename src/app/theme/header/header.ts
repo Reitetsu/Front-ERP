@@ -23,7 +23,7 @@ import { UserButton } from '../widgets/user-button';
     MatButtonModule,
     MatIconModule,
     Branding,
-    GithubButton,
+    //GithubButton, si algun dia se necesita
     NotificationButton,
     TranslateButton,
     UserButton,

@@ -16,5 +16,5 @@ export interface Token {
   token_type?: string;
   expires_in?: number;
   exp?: number;
-  refresh_token?: string;
+  refresh_token?: string |null; // hasta el momento de migrar a node.js, el backend no devuelve refresh_token, pero se deja por si se necesita en el futuro.
 }

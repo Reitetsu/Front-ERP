@@ -10,9 +10,9 @@ import { map } from 'rxjs/operators';
 export class FakeLoginService extends LoginService {
   private token = { access_token: 'MW56YjMyOUAxNjMuY29tWm9uZ2Jpbg==', token_type: 'bearer' };
 
-  override login() {
+  /*override login() {
     return of(this.token);
-  }
+  }*/
 
   override refresh() {
     return of(this.token);
