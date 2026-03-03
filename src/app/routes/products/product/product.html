@@ -1,0 +1,107 @@
+<mat-card class="page-card">
+  <mat-card-header>
+    <mat-card-title>Productos</mat-card-title>
+
+    <span class="spacer"></span>
+
+    <button mat-icon-button matTooltip="Nuevo" (click)="openAdd()">
+      <mat-icon [class.text-green]="drawerAdd.opened" [class.text-red]="!drawerAdd.opened">add</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Editar" (click)="openEdit()" [disabled]="!isRowSelected">
+      <mat-icon [class.text-green]="isRowSelected" [class.text-red]="!isRowSelected">edit</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Eliminar" (click)="deleteSelected()" [disabled]="!isRowSelected">
+      <mat-icon [class.text-green]="isRowSelected" [class.text-red]="!isRowSelected">close</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Buscar" (click)="openSearch()">
+      <mat-icon [class.text-green]="drawerSearch.opened" [class.text-red]="!drawerSearch.opened">search</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Descargar Excel" (click)="downloadExcel()">
+      <mat-icon>download</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <mat-drawer-container class="drawer-container">
+      <mat-drawer-content>
+        <div class="table-wrap">
+          <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z0">
+
+            <!-- EAN -->
+            <ng-container matColumnDef="barcode_Product">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>EAN</th>
+              <td mat-cell *matCellDef="let row">{{ row.barcode_Product }}</td>
+            </ng-container>
+
+            <!-- SKU -->
+            <ng-container matColumnDef="code_Product">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>SKU</th>
+              <td mat-cell *matCellDef="let row">{{ row.code_Product }}</td>
+            </ng-container>
+
+            <!-- Descripción -->
+            <ng-container matColumnDef="name_Product">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Descripción</th>
+              <td mat-cell *matCellDef="let row">{{ row.name_Product }}</td>
+            </ng-container>
+
+            <!-- Tipo -->
+            <ng-container matColumnDef="name_ProductType">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+              <td mat-cell *matCellDef="let row">{{ row.name_ProductType }}</td>
+            </ng-container>
+
+            <!-- Medida -->
+            <ng-container matColumnDef="abbreviation_Measurement">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Medida</th>
+              <td mat-cell *matCellDef="let row">{{ row.abbreviation_Measurement }}</td>
+            </ng-container>
+
+            <!-- Precio -->
+            <ng-container matColumnDef="price_Product">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio</th>
+              <td mat-cell *matCellDef="let row">{{ row.price_Product }}</td>
+            </ng-container>
+
+            <!-- Stock -->
+            <ng-container matColumnDef="stock_Product">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock</th>
+              <td mat-cell *matCellDef="let row">{{ row.stock_Product }}</td>
+            </ng-container>
+
+            <!-- Header/Rows -->
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              (click)="selectProduct(row)"
+              [class.row-selected]="selectedRow?.id === row.id">
+            </tr>
+          </table>
+
+
+        </div>
+      </mat-drawer-content>
+
+      <!-- SEARCH -->
+      <mat-drawer #drawerSearch mode="side" position="end" class="drawer">
+
+      </mat-drawer>
+
+      <!-- ADD -->
+      <mat-drawer #drawerAdd mode="side" position="end" class="drawer">
+
+      </mat-drawer>
+
+      <!-- EDIT -->
+      <mat-drawer #drawerEdit mode="side" position="end" class="drawer">
+
+      </mat-drawer>
+    </mat-drawer-container>
+  </mat-card-content>
+</mat-card>
