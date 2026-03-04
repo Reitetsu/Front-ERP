@@ -1,0 +1,70 @@
+<div class="panel">
+  <!-- Header -->
+  <div class="panel-header">
+    <div class="title">Agregar Producto</div>
+
+    <button mat-icon-button type="button" aria-label="Cerrar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="panel-body">
+    <form class="grid">
+      <!-- SKU -->
+      <mat-form-field appearance="outline">
+        <mat-label>SKU</mat-label>
+        <input matInput name="code_Product" />
+      </mat-form-field>
+
+      <!-- EAN -->
+      <mat-form-field appearance="outline">
+        <mat-label>EAN</mat-label>
+        <input matInput name="barcode_Product" />
+      </mat-form-field>
+
+      <!-- Descripción -->
+      <mat-form-field appearance="outline" class="col-2">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput rows="2" name="name_Product"></textarea>
+      </mat-form-field>
+
+      <!-- Medida -->
+      <mat-form-field appearance="outline">
+        <mat-label>Medida</mat-label>
+        <mat-select name="measurementId">
+          <mat-option value="1">UNI.</mat-option>
+          <mat-option value="2">CAJA</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Tipo -->
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo de Producto</mat-label>
+        <mat-select name="productTypeId">
+          <mat-option value="1">Tipo A</mat-option>
+          <mat-option value="2">Tipo B</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Precio -->
+      <mat-form-field appearance="outline">
+        <mat-label>Precio</mat-label>
+        <input matInput type="number" name="price_Product" />
+      </mat-form-field>
+
+      <!-- Stock -->
+      <mat-form-field appearance="outline">
+        <mat-label>Stock</mat-label>
+        <input matInput type="number" name="stock_Product" />
+      </mat-form-field>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="panel-footer">
+    <button mat-stroked-button type="button">Cerrar</button>
+    <button mat-stroked-button color="primary" type="button">Agregar</button>
+    <button mat-flat-button color="primary" type="button">Agregar/Nuevo</button>
+  </div>
+</div>

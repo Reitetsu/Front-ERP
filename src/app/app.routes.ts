@@ -25,7 +25,7 @@ export const routes: Routes = [
         path: 'profile',
         loadChildren: () => import('./routes/profile/profile.routes').then(m => m.routes),
       },
-      { path: 'products', loadChildren: () => import('./routes/products/products.routes').then(m => m.PRODUCTS_ROUTES) },
+      { path: 'product', loadChildren: () => import('./routes/products/products.routes').then(m => m.PRODUCTS_ROUTES) },
     ],
   },
   {
