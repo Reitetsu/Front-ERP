@@ -45,6 +45,7 @@
             [columnSortable]="true"
             [columnResizable]="true"
 
+
             [showPaginator]="true"
             [pageOnFront]="false"
             [length]="totalItems"
@@ -62,7 +63,13 @@
         <ng-container [ngSwitch]="drawerMode">
 
           <!-- ADD -->
-          <app-producto-add></app-producto-add>
+          <app-producto-add
+            *ngSwitchCase="'add'"
+            [productTypes]="productTypes"
+            [measurements]="measurements"
+            (submitProduct)="createFromDrawer($event)"
+            (cancel)="closeDrawer()">
+          </app-producto-add>
           <!-- Otros modos (luego) -->
           <div *ngSwitchCase="'search'" style="padding: 8px;">
             Search pendiente…

@@ -14,3 +14,77 @@
   padding: 8px 4px;
   border-top: 1px solid rgba(255,255,255,.08);
 }
+.erp-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.erp-header {
+  padding: 14px 16px 12px;
+  .title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+}
+
+.erp-body {
+  padding: 14px 16px 18px;
+  overflow: auto; // importante dentro del drawer
+  flex: 1 1 auto;
+}
+
+.section {
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.9;
+  margin: 2px 0 10px;
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-1 {
+  grid-template-columns: 1fr;
+}
+
+.span-2 {
+  grid-column: 1 / -1;
+}
+
+.ghost {
+  display: block;
+}
+
+.erp-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(0,0,0,.12);
+  background: inherit;
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .ghost {
+    display: none;
+  }
+}

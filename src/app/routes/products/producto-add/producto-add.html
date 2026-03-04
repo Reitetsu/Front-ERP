@@ -1,70 +1,114 @@
-<div class="panel">
-  <!-- Header -->
-  <div class="panel-header">
-    <div class="title">Agregar Producto</div>
+<form class="erp-form" [formGroup]="form" (ngSubmit)="onSubmit()">
 
-    <button mat-icon-button type="button" aria-label="Cerrar">
-      <mat-icon>close</mat-icon>
-    </button>
+  <!-- Header (sin botones, solo título) -->
+  <div class="erp-header">
+    <div class="left">
+      <div class="title">Nuevo producto</div>
+    </div>
   </div>
 
-  <!-- Body -->
-  <div class="panel-body">
-    <form class="grid">
-      <!-- SKU -->
-      <mat-form-field appearance="outline">
-        <mat-label>SKU</mat-label>
-        <input matInput name="code_Product" />
-      </mat-form-field>
+  <mat-divider></mat-divider>
 
-      <!-- EAN -->
-      <mat-form-field appearance="outline">
-        <mat-label>EAN</mat-label>
-        <input matInput name="barcode_Product" />
-      </mat-form-field>
+  <div class="erp-body">
 
-      <!-- Descripción -->
-      <mat-form-field appearance="outline" class="col-2">
-        <mat-label>Descripción</mat-label>
-        <textarea matInput rows="2" name="name_Product"></textarea>
-      </mat-form-field>
+    <!-- 1) SKU, EAN, Nombre -->
+    <div class="section">
+      <div class="grid grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>SKU / Código</mat-label>
+          <input matInput formControlName="code_Product" autocomplete="off" />
+          <mat-hint>Solo A-Z 0-9 - _</mat-hint>
+          <mat-error *ngIf="f.code_Product.touched && f.code_Product.hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="f.code_Product.touched && f.code_Product.hasError('pattern')">Formato inválido</mat-error>
+          <mat-error *ngIf="f.code_Product.touched && f.code_Product.hasError('maxlength')">Máx. 30</mat-error>
+        </mat-form-field>
 
-      <!-- Medida -->
-      <mat-form-field appearance="outline">
-        <mat-label>Medida</mat-label>
-        <mat-select name="measurementId">
-          <mat-option value="1">UNI.</mat-option>
-          <mat-option value="2">CAJA</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>EAN / Código de barras</mat-label>
+          <input matInput formControlName="barcode_Product" autocomplete="off" />
+          <mat-hint>Solo números (opcional)</mat-hint>
+          <mat-error *ngIf="f.barcode_Product.touched && f.barcode_Product.hasError('pattern')">Solo números</mat-error>
+          <mat-error *ngIf="f.barcode_Product.touched && f.barcode_Product.hasError('maxlength')">Máx. 30</mat-error>
+        </mat-form-field>
 
-      <!-- Tipo -->
-      <mat-form-field appearance="outline">
-        <mat-label>Tipo de Producto</mat-label>
-        <mat-select name="productTypeId">
-          <mat-option value="1">Tipo A</mat-option>
-          <mat-option value="2">Tipo B</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="span-2">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="name_Product" autocomplete="off" />
+          <mat-error *ngIf="f.name_Product.touched && f.name_Product.hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="f.name_Product.touched && f.name_Product.hasError('maxlength')">Máx. 120</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
 
-      <!-- Precio -->
-      <mat-form-field appearance="outline">
-        <mat-label>Precio</mat-label>
-        <input matInput type="number" name="price_Product" />
-      </mat-form-field>
+    <!-- 2) Descripción -->
+    <div class="section">
+      <div class="grid grid-1">
+        <mat-form-field appearance="outline">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput rows="2" formControlName="description_Product"></textarea>
+          <mat-hint align="end">{{ (f.description_Product.value?.length || 0) }}/500</mat-hint>
+          <mat-error *ngIf="f.description_Product.touched && f.description_Product.hasError('maxlength')">Máx. 500</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <!-- 4) Precio -->
+    <div class="section">
+      <div class="grid grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Precio</mat-label>
+          <input matInput type="number" formControlName="price_Product" />
+          <mat-hint>0 o mayor</mat-hint>
+          <mat-error *ngIf="f.price_Product.touched && f.price_Product.invalid">Valor inválido</mat-error>
+        </mat-form-field>
+        <!-- 3) Tipo de producto -->
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de producto</mat-label>
+          <mat-select formControlName="productTypeId">
+            <mat-option [value]="0" disabled>Seleccione</mat-option>
+            <mat-option *ngFor="let t of productTypes" [value]="t.id">
+              {{ t.name_ProductType }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="f.productTypeId.touched && f.productTypeId.invalid">Requerido</mat-error>
+        </mat-form-field>
 
-      <!-- Stock -->
-      <mat-form-field appearance="outline">
-        <mat-label>Stock</mat-label>
-        <input matInput type="number" name="stock_Product" />
-      </mat-form-field>
-    </form>
+        <div class="ghost"></div>
+      </div>
+    </div>
+
+
+
+
+
+    <!-- 5) Stock y Medida en una sola línea -->
+    <div class="section">
+      <div class="grid grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Stock inicial</mat-label>
+          <input matInput type="number" formControlName="stock_Product" />
+          <mat-hint>0 o mayor</mat-hint>
+          <mat-error *ngIf="f.stock_Product.touched && f.stock_Product.invalid">Valor inválido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Medida</mat-label>
+          <mat-select formControlName="measurementId">
+            <mat-option [value]="0" disabled>Seleccione</mat-option>
+            <mat-option *ngFor="let m of measurements" [value]="m.id">
+              {{ m.abbreviation_Measurement }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="f.measurementId.touched && f.measurementId.invalid">Requerido</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Footer -->
-  <div class="panel-footer">
-    <button mat-stroked-button type="button">Cerrar</button>
-    <button mat-stroked-button color="primary" type="button">Agregar</button>
-    <button mat-flat-button color="primary" type="button">Agregar/Nuevo</button>
+  <!-- Footer sticky (botones abajo) -->
+  <div class="erp-footer">
+    <button mat-stroked-button type="button" (click)="onCancel()">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit">Guardar</button>
   </div>
-</div>
+
+</form>

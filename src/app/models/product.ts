@@ -31,3 +31,4 @@ export interface Product {
     name_Product?: string;
     description_Product?:string;
   }
+  export type ProductCreateDto = Omit<Product, 'id' | 'name_ProductType' | 'abbreviation_Measurement'>;

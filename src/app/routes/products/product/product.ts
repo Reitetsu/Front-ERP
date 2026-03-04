@@ -10,7 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSidenavModule, MatDrawer } from '@angular/material/sidenav';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 
-import { Product, ProductSearchDto } from 'src/app/models/product'; // ajusta alias si no lo tienes
+import { Product, ProductSearchDto,ProductCreateDto } from 'src/app/models/product'; // ajusta alias si no lo tienes
 import { Measurement } from 'src/app/models/measurement';
 
 import { ProductService } from 'src/app/service/product.service';
@@ -229,7 +229,24 @@ export class ProductComponent implements OnInit {
       error: () => alert('Hubo un error al eliminar.'),
     });
   }
+  createFromDrawer(dto: ProductCreateDto) {
+    // Si tu backend exige campos extra (company_id, etc.) este es el sitio correcto para setearlos.
 
+    this.loading = true; // si ya usas bandera de loading
+    this.productService.addProduct(dto).subscribe({
+      next: () => {
+        this.closeDrawer();
+        // refresca el grid con el search actual:
+        this.loadProducts(this.searchDto);
+        this.loading = false;
+        // opcional: snackbar (si ya tienes MatSnackBar en el padre)
+      },
+      error: () => {
+        this.loading = false;
+        // opcional: snackbar error
+      }
+    });
+  }
   // ===== Excel =====
   downloadExcel(): void {
     const headersMapping = {
