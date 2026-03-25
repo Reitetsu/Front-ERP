@@ -1,0 +1,60 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.page-card {
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+
+mat-card-content {
+  flex: 1;
+  min-height: 0;
+}
+
+.drawer-container {
+  height: 100%;
+}
+
+mat-drawer-content {
+  height: 100%;
+}
+
+:host ::ng-deep .mtx-grid {
+  height: calc(100vh - 220px);
+}
+
+:host ::ng-deep .mtx-grid .mat-mdc-table-container {
+  height: 100%;
+  overflow: auto;
+}
+
+:host ::ng-deep .mtx-grid .mat-mdc-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+:host ::ng-deep .mtx-grid .mat-mdc-header-row,
+:host ::ng-deep .mtx-grid .mat-mdc-header-cell {
+  background: var(--mat-app-background-color, #121212);
+}
+
+:host ::ng-deep .mtx-grid .mat-mdc-row,
+:host ::ng-deep .mtx-grid .mat-mdc-header-row {
+  height: 48px;
+}
+
+:host ::ng-deep .mtx-grid .mat-mdc-cell,
+:host ::ng-deep .mtx-grid .mat-mdc-header-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:host ::ng-deep .mtx-grid .mat-mdc-cell,
+:host ::ng-deep .mtx-grid .mat-mdc-header-cell {
+  min-width: 0;
+}

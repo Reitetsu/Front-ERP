@@ -16,7 +16,7 @@ export function apiInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
         const body: any = event.body;
         // failure: { code: **, msg: 'failure' }
         // success: { code: 0,  msg: 'success', data: {} }
-        if (body && 'code' in body && body.code !== 0) {
+        if (body !== null && typeof body === 'object' && 'code' in body && body.code !== 0) {
           if (body.msg) {
             toast.error(body.msg);
           }

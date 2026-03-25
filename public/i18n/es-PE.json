@@ -1,7 +1,12 @@
 {
   "menu": {
     "dashboard": "Panel",
+    "menu": "Menú",
     "design": "Diseño",
+    "product": "Productos",
+    "facility": "Sucursal",
+    "sale": "Ventas",
+    "payment": "Pagos",
     "design.colors": "Sistema de Colores",
     "design.icons": "Iconos Material",
     "material": "Material",

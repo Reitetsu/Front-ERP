@@ -2,6 +2,11 @@
   "menu": {
     "dashboard": "Dashboard",
     "design": "Design",
+    "menu": "Menu",
+    "product": "Products",
+    "facility": "Facility",
+    "sale": "Sales",
+    "payment": "Payments",
     "design.colors": "Color System",
     "design.icons": "Material Icons",
     "material": "Material",

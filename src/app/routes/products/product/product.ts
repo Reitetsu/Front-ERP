@@ -1,30 +1,28 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ChangeDetectorRef } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+﻿import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSidenavModule, MatDrawer } from '@angular/material/sidenav';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
-import { Product, ProductSearchDto,ProductCreateDto } from 'src/app/models/product'; // ajusta alias si no lo tienes
+import { Product, ProductSearchDto, ProductCreateDto, ProductUpdateDto } from 'src/app/models/product';
 import { Measurement } from 'src/app/models/measurement';
+import { ProductType } from 'src/app/models/product-type';
 
 import { ProductService } from 'src/app/service/product.service';
 import { MeasurementService } from 'src/app/service/measurement.service';
 import { ProductTypeService } from 'src/app/service/product-type.service';
 import { UserService } from 'src/app/service/user.service';
-
 import { ExcelExportService } from 'src/app/utilities/excel-export.service';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
-import { MatTableDataSource } from '@angular/material/table';
 import { ProductoAdd } from '../producto-add/producto-add';
-import { ProductType } from 'src/app/models/product-type';
+import { ProductoEdit } from '../producto-edit/producto-edit';
+import { ProductoSearch } from '../producto-search/producto-search';
 import { MtxGridColumn, MtxGridModule } from '@ng-matero/extensions/grid';
 
 type DrawerMode = 'add' | 'search' | 'edit' | null;
@@ -34,33 +32,31 @@ type DrawerMode = 'add' | 'search' | 'edit' | null;
   standalone: true,
   imports: [
     CommonModule,
-
     MatCardModule,
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
     MatSidenavModule,
-
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-
-    // drawer content
     ProductoAdd,
+    ProductoEdit,
+    ProductoSearch,
     MtxGridModule,
   ],
   templateUrl: './product.html',
   styleUrl: './product.scss',
 })
 export class ProductComponent implements OnInit {
-   // ===== Drawer único =====
   @ViewChild('drawerEnd', { static: true }) drawerEnd!: MatDrawer;
   drawerMode: DrawerMode = null;
+  gridReady = false;
+  private suppressInitialPageEvent = true;
 
-  // ===== Grid =====
-  private gridReady = false;
   loading = false;
   trackById = (_: number, item: any) => item?.id;
+
   columns: MtxGridColumn[] = [
     { header: 'EAN', field: 'barcode_Product', minWidth: 50 },
     { header: 'SKU', field: 'code_Product', minWidth: 50 },
@@ -68,65 +64,81 @@ export class ProductComponent implements OnInit {
     { header: 'Tipo', field: 'name_ProductType', minWidth: 50 },
     { header: 'Medida', field: 'abbreviation_Measurement', minWidth: 50 },
     { header: 'Precio', field: 'price_Product', minWidth: 50 },
-    { header: 'Stock', field: 'stock_Product', minWidth: 50, resizable: false }, // ejemplo
+    { header: 'Stock', field: 'stock_Product', minWidth: 50, resizable: false },
   ];
 
   rows: Product[] = [];
-
-  // ===== Paging server-side =====
   searchDto: ProductSearchDto = {};
   currentPage = 1;
   itemsPerPage = 25;
   totalItems = 0;
 
-  // ===== Selection =====
   selectedRow: Product | null = null;
   selectedProduct: Product | null = null;
   isRowSelected = false;
 
-  // ===== Lookups =====
   measurements: Measurement[] = [];
   productTypes: ProductType[] = [];
 
   constructor(
-    private cdr: ChangeDetectorRef,
     private productService: ProductService,
     private userService: UserService,
     private measurementService: MeasurementService,
     private productTypeService: ProductTypeService,
-    private excelExportService: ExcelExportService
+    private excelExportService: ExcelExportService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.gridReady = true;
+    this.suppressInitialPageEvent = false;
     this.initializeSearchDto();
-    this.loadLookups();
+    this.ensureLookupsLoaded();
     this.loadProducts(this.searchDto);
-    queueMicrotask(() => (this.gridReady = true));
   }
 
-  // ===== Drawer =====
-  openAdd(): void {
-    this.drawerMode = 'add';
+  private applyGridData(mapped: Product[], total: number): void {
+    this.selectedRow = null;
+    this.selectedProduct = null;
+    this.isRowSelected = false;
+    this.rows = [...mapped];
+    this.totalItems = total;
+    this.loading = false;
+    this.cdr.detectChanges();
+  }
+
+  private toggleDrawer(mode: DrawerMode): void {
+    const isSameMode = this.drawerMode === mode;
+
+    if (this.drawerEnd.opened && isSameMode) {
+      this.closeDrawer();
+      return;
+    }
+
+    this.drawerMode = mode;
     this.drawerEnd.open();
+  }
+
+  openAdd(): void {
+    this.ensureLookupsLoaded();
+    this.toggleDrawer('add');
   }
 
   openSearch(): void {
-    this.drawerMode = 'search';
-    this.drawerEnd.open();
+    this.ensureLookupsLoaded();
+    this.toggleDrawer('search');
   }
 
   openEdit(): void {
     if (!this.isRowSelected) return;
-    this.drawerMode = 'edit';
-    this.drawerEnd.open();
+    this.ensureLookupsLoaded();
+    this.toggleDrawer('edit');
   }
 
   closeDrawer(): void {
     this.drawerEnd.close();
     this.drawerMode = null;
   }
-
-  // ===== Init =====
   private initializeSearchDto(): void {
     const userData = this.userService.getUserDat?.();
     if (userData?.company) this.searchDto.code_company = userData.company;
@@ -134,25 +146,35 @@ export class ProductComponent implements OnInit {
 
   private loadLookups(): void {
     this.measurementService.getAllMeasurements().subscribe({
-      next: (m) => (this.measurements = m),
-      error: (err) => console.error('Error medidas', err),
+      next: m => (this.measurements = m ?? []),
+      error: err => console.error('Error medidas', err),
     });
 
     this.productTypeService.getAllProductTypes().subscribe({
-      next: (t) => (this.productTypes = t),
-      error: (err) => console.error('Error tipos', err),
+      next: t => (this.productTypes = t ?? []),
+      error: err => console.error('Error tipos', err),
     });
   }
 
-  // ===== Data =====
-  loadProducts(criteria: any): void {
+  private ensureLookupsLoaded(): void {
+    const hasMeasurements = Array.isArray(this.measurements) && this.measurements.length > 0;
+    const hasProductTypes = Array.isArray(this.productTypes) && this.productTypes.length > 0;
+    if (hasMeasurements && hasProductTypes) {
+      return;
+    }
+    this.loadLookups();
+  }
+
+  loadProducts(criteria: ProductSearchDto): void {
     this.searchDto = criteria ?? {};
     this.loading = true;
 
     this.productService.getProductspag(this.searchDto, this.currentPage, this.itemsPerPage).subscribe({
-      next: (resp) => {
+      next: resp => {
         const mapped = (resp?.data ?? []).map((p: any) => ({
           id: p.id,
+          productTypeId: Number(p.productTypeId ?? p.product_type?.id ?? 0),
+          measurementId: Number(p.measurementId ?? p.measurement?.id ?? 0),
           code_Product: p.code_Product,
           name_Product: p.name_Product,
           description_Product: p.description_Product,
@@ -163,43 +185,58 @@ export class ProductComponent implements OnInit {
           abbreviation_Measurement: p.measurement?.abbreviation_Measurement ?? '',
         }));
 
-        this.selectedRow = null;
-        this.selectedProduct = null;
-        this.isRowSelected = false;
-        this.rows = [...mapped];
-        this.totalItems = resp?.meta?.total ?? mapped.length;
-
-
-        this.loading = false;
-
-        // ✅ evita NG0100
-        this.cdr.detectChanges();
+        this.applyGridData(mapped, resp?.meta?.total ?? mapped.length);
       },
-      error: (err) => {
+      error: err => {
         console.error('Error productos', err);
-        this.loading = false;
+        this.applyGridData([], 0);
       },
     });
   }
 
-  // ===== Grid events =====
   onGridSelection(e: any): void {
-    const row =
+    const row = this.extractSelectedRow(e);
+
+    this.selectedRow = row;
+    this.selectedProduct = row;
+    this.isRowSelected = !!row;
+    if (row) {
+      console.log('Producto seleccionado:', row);
+    }
+  }
+
+  onGridRowClick(e: any): void {
+    this.onGridSelection(e);
+  }
+
+  private extractSelectedRow(e: any): Product | null {
+    const firstSelected = e?.selected?.[0];
+    const firstRow = e?.rows?.[0];
+    const firstArray = Array.isArray(e) ? e[0] : null;
+
+    const raw =
+      e?.rowData ??
+      e?.row?.data ??
       e?.row ??
-      e?.rows?.[0] ??
-      e?.selected?.[0] ??
-      (Array.isArray(e) ? e[0] : null) ??
+      e?.record ??
+      firstSelected?.data ??
+      firstSelected ??
+      firstRow?.data ??
+      firstRow ??
+      firstArray?.data ??
+      firstArray ??
+      e?.data ??
       null;
 
-    queueMicrotask(() => {
-      this.selectedRow = row;
-      this.selectedProduct = row;
-      this.isRowSelected = !!row;
-      this.cdr.detectChanges();
-    });
+    if (!raw || typeof raw !== 'object') {
+      return null;
+    }
+
+    return raw as Product;
   }
 
   onGridPageChange(e: any): void {
+    if (this.suppressInitialPageEvent) return;
     if (this.loading) return;
 
     const pageIndex = Number(e?.pageIndex ?? 0);
@@ -207,11 +244,9 @@ export class ProductComponent implements OnInit {
 
     this.currentPage = pageIndex + 1;
     this.itemsPerPage = pageSize;
-
     this.loadProducts(this.searchDto);
   }
 
-  // ===== Delete =====
   deleteSelected(): void {
     const p = this.selectedProduct;
     if (!p) return;
@@ -229,25 +264,46 @@ export class ProductComponent implements OnInit {
       error: () => alert('Hubo un error al eliminar.'),
     });
   }
-  createFromDrawer(dto: ProductCreateDto) {
-    // Si tu backend exige campos extra (company_id, etc.) este es el sitio correcto para setearlos.
 
-    this.loading = true; // si ya usas bandera de loading
+  createFromDrawer(dto: ProductCreateDto): void {
+    this.loading = true;
     this.productService.addProduct(dto).subscribe({
       next: () => {
         this.closeDrawer();
-        // refresca el grid con el search actual:
         this.loadProducts(this.searchDto);
         this.loading = false;
-        // opcional: snackbar (si ya tienes MatSnackBar en el padre)
       },
       error: () => {
         this.loading = false;
-        // opcional: snackbar error
-      }
+      },
     });
   }
-  // ===== Excel =====
+
+  updateFromDrawer(dto: ProductUpdateDto): void {
+    const productId = this.selectedProduct?.id;
+    if (!productId) {
+      return;
+    }
+
+    this.loading = true;
+    this.productService.updateProduct(productId, dto).subscribe({
+      next: () => {
+        this.closeDrawer();
+        this.loadProducts(this.searchDto);
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      },
+    });
+  }
+
+  onSearch(dto: ProductSearchDto): void {
+    this.currentPage = 1;
+    this.loadProducts(dto);
+    this.closeDrawer();
+  }
+
   downloadExcel(): void {
     const headersMapping = {
       id: 'Id',
@@ -262,7 +318,7 @@ export class ProductComponent implements OnInit {
         const products = response?.data ?? [];
         this.excelExportService.exportToExcel(products, 'Productos', headersMapping);
       },
-      error: (err) => console.error('Error excel', err),
+      error: err => console.error('Error excel', err),
     });
   }
 }

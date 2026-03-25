@@ -7,3 +7,14 @@
   background-color: var(--header-background-color);
   backdrop-filter: blur(8px);
 }
+
+.company-facility-top {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: 8px;
+}
+
+.cf-field {
+  width: 170px;
+}

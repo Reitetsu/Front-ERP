@@ -9,6 +9,30 @@
     <app-branding />
   }
 
+  <div class="company-facility-top">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="cf-field">
+      <mat-label>Compañía</mat-label>
+      <mat-select [(ngModel)]="selectedCompany" (selectionChange)="onCompanyChange()">
+        @for (company of companies; track company.id) {
+          <mat-option [value]="company.id">
+            {{ company.code_Company }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="cf-field">
+      <mat-label>Sucursal</mat-label>
+      <mat-select [(ngModel)]="selectedFacility" (selectionChange)="onFacilityChange()">
+        @for (facility of facilities; track facility.id) {
+          <mat-option [value]="facility.id">
+            {{ facility.code_Facility }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
   <span class="flex-fill"></span>
 
 <!-- <app-github-button /> -->

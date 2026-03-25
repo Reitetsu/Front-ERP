@@ -1,0 +1,70 @@
+<form class="erp-form" [formGroup]="form" (ngSubmit)="onSearch()">
+  <div class="erp-header">
+    <div class="left">
+      <div class="title">Buscar pagos</div>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="erp-body">
+    <div class="section">
+      <div class="grid grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Codigo (Id)</mat-label>
+          <input matInput type="number" formControlName="id" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Caja</mat-label>
+          <input matInput type="number" formControlName="cashRegisterId" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Venta</mat-label>
+          <input matInput type="number" formControlName="saleId" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de pago</mat-label>
+          <input matInput type="number" formControlName="paymentTypeId" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Monto desde</mat-label>
+          <input matInput type="number" formControlName="amountFrom" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Monto hasta</mat-label>
+          <input matInput type="number" formControlName="amountTo" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha pago desde</mat-label>
+          <input matInput [matDatepicker]="dateFromPicker" formControlName="dateFrom" autocomplete="off" />
+          <mat-datepicker-toggle matSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #dateFromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha pago hasta</mat-label>
+          <input matInput [matDatepicker]="dateToPicker" formControlName="dateTo" autocomplete="off" />
+          <mat-datepicker-toggle matSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+          <mat-datepicker #dateToPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <input matInput formControlName="status" autocomplete="off" />
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <div class="erp-footer">
+    <button mat-stroked-button type="button" (click)="onReset()">Limpiar</button>
+    <button mat-stroked-button type="button" (click)="onClose()">Cerrar</button>
+    <button mat-flat-button color="primary" type="submit">Buscar</button>
+  </div>
+</form>

@@ -1,0 +1,87 @@
+﻿<mat-card class="page-card">
+  <mat-card-header>
+    <mat-card-title>Facilities</mat-card-title>
+
+    <span class="spacer"></span>
+
+    <button mat-icon-button matTooltip="Nuevo" (click)="openAdd()">
+      <mat-icon>add</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Editar" (click)="openEdit()" [disabled]="!isRowSelected">
+      <mat-icon>edit</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Eliminar" (click)="deleteSelected()" [disabled]="!isRowSelected">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Buscar" (click)="openSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Descargar Excel" (click)="downloadExcel()">
+      <mat-icon>download</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <mat-drawer-container class="drawer-container">
+      <mat-drawer-content>
+        <div class="grid-wrap">
+          <mtx-grid
+            [data]="rows"
+            [trackBy]="trackById"
+            [columns]="columns"
+            [loading]="loading"
+            [rowSelectable]="true"
+            [hideRowSelectionCheckbox]="true"
+            [multiSelectable]="false"
+            [disableRowClickSelection]="false"
+            [showToolbar]="true"
+            [columnHideable]="true"
+            [columnSortable]="true"
+            [columnResizable]="true"
+            [showPaginator]="true"
+            [pageOnFront]="false"
+            [length]="totalItems"
+            [pageSize]="itemsPerPage"
+            [pageIndex]="currentPage - 1"
+            [pageSizeOptions]="[25, 50, 100]"
+            (rowSelectionChange)="onGridSelection($event)"
+            (rowSelectedChange)="onGridSelection($event)"
+            (rowClick)="onGridRowClick($event)"
+            (page)="onGridPageChange($event)">
+          </mtx-grid>
+        </div>
+      </mat-drawer-content>
+
+      <mat-drawer #drawerEnd mode="side" position="end" class="drawer">
+        <ng-container [ngSwitch]="drawerMode">
+          <app-facility-add
+            *ngSwitchCase="'add'"
+            (submitFacility)="createFromDrawer($event)"
+            (cancel)="closeDrawer()">
+          </app-facility-add>
+
+          <app-facility-search
+            *ngSwitchCase="'search'"
+            (search)="onSearch($event)"
+            (close)="closeDrawer()">
+          </app-facility-search>
+
+          <app-facility-edit
+            *ngSwitchCase="'edit'"
+            [facility]="selectedFacility"
+            (submitFacility)="updateFromDrawer($event)"
+            (cancel)="closeDrawer()">
+          </app-facility-edit>
+
+          <div *ngSwitchDefault style="padding: 8px;">
+            Selecciona una accion...
+          </div>
+        </ng-container>
+      </mat-drawer>
+    </mat-drawer-container>
+  </mat-card-content>
+</mat-card>

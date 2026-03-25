@@ -28,6 +28,17 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      const isExpectedNoPayments404 =
+        error.status === STATUS.NOT_FOUND && req.url.includes('/api/Payment/by-saleId/');
+      const isExpectedPersonNotFound404 =
+        error.status === STATUS.NOT_FOUND && req.url.includes('/api/Person/search');
+      const isExpectedCustomerNotFound404 =
+        error.status === STATUS.NOT_FOUND && req.url.includes('/api/Customer/verificar-cliente');
+
+      if (isExpectedNoPayments404 || isExpectedPersonNotFound404 || isExpectedCustomerNotFound404) {
+        return throwError(() => error);
+      }
+
       if (errorPages.includes(error.status)) {
         router.navigateByUrl(`/${error.status}`, {
           skipLocationChange: true,

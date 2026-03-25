@@ -30,6 +30,7 @@ import { PageHeader } from '@shared';
 export class ProfileLayout {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  readonly defaultAvatar = 'images/avatar-default.jpg';
 
   user = toSignal(this.auth.user());
 
@@ -37,5 +38,11 @@ export class ProfileLayout {
     this.auth.logout().subscribe(() => {
       this.router.navigateByUrl('/auth/login');
     });
+  }
+
+  onAvatarError(event: Event): void {
+    const img = event.target as HTMLImageElement | null;
+    if (!img) return;
+    img.src = this.defaultAvatar;
   }
 }

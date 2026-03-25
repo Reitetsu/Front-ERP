@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
-import { Product, ProductCreateDto } from '../models/product';
+import { Product, ProductCreateDto, ProductSearchDto, ProductUpdateDto } from '../models/product';
 import { environment } from 'src/environments/environment';
 
 
@@ -12,23 +12,31 @@ import { environment } from 'src/environments/environment';
 export class ProductService {
   private readonly apiUrl = `${environment.baseUrl}/Product`;
   constructor(private http: HttpClient) {}
-  getProductspag(searchDto: any, page: number, size: number): Observable<any> {
-    debugger
+  getProductspag(searchDto: ProductSearchDto, page: number, size: number): Observable<any> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
     if (searchDto) {
-      Object.keys(searchDto).forEach(key => {
-        if (searchDto[key]) {
-          params = params.set(key, searchDto[key]);
+      const query = searchDto as Record<string, any>;
+      Object.keys(query).forEach(key => {
+        if (query[key] !== undefined && query[key] !== null && `${query[key]}`.trim() !== '') {
+          params = params.set(key, query[key]);
         }
       });
     }
 
     return this.http.get<any>(`${this.apiUrl}/searchproduct`, { params });
   }
-  getProducts(params: any): Observable<any> {
+  getProducts(searchDto: ProductSearchDto): Observable<any> {
+    let params = new HttpParams();
+    Object.keys(searchDto ?? {}).forEach(key => {
+      const value = (searchDto as any)[key];
+      if (value !== undefined && value !== null && `${value}`.trim() !== '') {
+        params = params.set(key, value);
+      }
+    });
+
     return this.http.get<any>(`${this.apiUrl}/searchproducts`, { params });
   }
   getAllProducts(): Observable<Product[]> {
@@ -51,8 +59,8 @@ export class ProductService {
   uploadProducts(products: Product[]): Observable<any> {
     return this.http.post<any>(this.apiUrl, products);
   }
-  updateProduct(productId: number, product: Product): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/${productId}`, product);
+  updateProduct(productId: number, product: ProductUpdateDto): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${productId}`, product);
   }
 
   deleteProduct(productId: number): Observable<void> {

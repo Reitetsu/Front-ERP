@@ -25,7 +25,11 @@ export const routes: Routes = [
         path: 'profile',
         loadChildren: () => import('./routes/profile/profile.routes').then(m => m.routes),
       },
+      { path: 'menu', loadChildren: () => import('./routes/menus/menus.routes').then(m => m.MENUS_ROUTES) },
       { path: 'product', loadChildren: () => import('./routes/products/products.routes').then(m => m.PRODUCTS_ROUTES) },
+      { path: 'facility', loadChildren: () => import('./routes/facilities/facilities.routes').then(m => m.FACILITIES_ROUTES) },
+      { path: 'sale', loadChildren: () => import('./routes/sales/sales.routes').then(m => m.SALES_ROUTES) },
+      { path: 'payment', loadChildren: () => import('./routes/payments/payments.routes').then(m => m.PAYMENTS_ROUTES) },
     ],
   },
   {

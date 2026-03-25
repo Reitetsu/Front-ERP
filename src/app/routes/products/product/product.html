@@ -1,4 +1,4 @@
-<mat-card class="page-card">
+﻿<mat-card class="page-card">
   <mat-card-header>
     <mat-card-title>Productos</mat-card-title>
 
@@ -34,18 +34,14 @@
             [trackBy]="trackById"
             [columns]="columns"
             [loading]="loading"
-
             [rowSelectable]="true"
             [hideRowSelectionCheckbox]="true"
             [multiSelectable]="false"
-
+            [disableRowClickSelection]="false"
             [showToolbar]="true"
-
             [columnHideable]="true"
             [columnSortable]="true"
             [columnResizable]="true"
-
-
             [showPaginator]="true"
             [pageOnFront]="false"
             [length]="totalItems"
@@ -53,16 +49,15 @@
             [pageIndex]="currentPage - 1"
             [pageSizeOptions]="[25, 50, 100]"
             (rowSelectionChange)="onGridSelection($event)"
+            (rowSelectedChange)="onGridSelection($event)"
+            (rowClick)="onGridRowClick($event)"
             (page)="onGridPageChange($event)">
           </mtx-grid>
         </div>
       </mat-drawer-content>
 
-      <!-- ✅ Drawer ÚNICO -->
       <mat-drawer #drawerEnd mode="side" position="end" class="drawer">
         <ng-container [ngSwitch]="drawerMode">
-
-          <!-- ADD -->
           <app-producto-add
             *ngSwitchCase="'add'"
             [productTypes]="productTypes"
@@ -70,19 +65,28 @@
             (submitProduct)="createFromDrawer($event)"
             (cancel)="closeDrawer()">
           </app-producto-add>
-          <!-- Otros modos (luego) -->
-          <div *ngSwitchCase="'search'" style="padding: 8px;">
-            Search pendiente…
-          </div>
 
-          <div *ngSwitchCase="'edit'" style="padding: 8px;">
-            Edit pendiente…
-          </div>
+          <app-producto-search
+            *ngSwitchCase="'search'"
+            [productTypes]="productTypes"
+            [measurements]="measurements"
+            [codeCompany]="searchDto.code_company || ''"
+            (search)="onSearch($event)"
+            (close)="closeDrawer()">
+          </app-producto-search>
+
+          <app-producto-edit
+            *ngSwitchCase="'edit'"
+            [product]="selectedProduct"
+            [productTypes]="productTypes"
+            [measurements]="measurements"
+            (submitProduct)="updateFromDrawer($event)"
+            (cancel)="closeDrawer()">
+          </app-producto-edit>
 
           <div *ngSwitchDefault style="padding: 8px;">
-            Selecciona una acción…
+            Selecciona una acción...
           </div>
-
         </ng-container>
       </mat-drawer>
     </mat-drawer-container>

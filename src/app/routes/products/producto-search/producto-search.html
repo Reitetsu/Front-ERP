@@ -1,1 +1,72 @@
-<p>producto-search works!</p>
+<form class="erp-form" [formGroup]="form" (ngSubmit)="onSearch()">
+  <div class="erp-header">
+    <div class="left">
+      <div class="title">Buscar producto</div>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="erp-body">
+    <div class="section">
+      <div class="grid grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>SKU / Código</mat-label>
+          <input matInput formControlName="code_Product" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>EAN / Código de barras</mat-label>
+          <input matInput formControlName="barcode_Product" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="span-2">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="name_Product" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="span-2">
+          <mat-label>Descripción</mat-label>
+          <input matInput formControlName="description_Product" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="productTypeId">
+            <mat-option [value]="0">Todos</mat-option>
+            <mat-option *ngFor="let t of productTypes" [value]="t.id">
+              {{ t.name_ProductType }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Medida</mat-label>
+          <mat-select formControlName="measurementId">
+            <mat-option [value]="0">Todas</mat-option>
+            <mat-option *ngFor="let m of measurements" [value]="m.id">
+              {{ m.abbreviation_Measurement }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Precio</mat-label>
+          <input matInput type="number" formControlName="price_Product" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Stock</mat-label>
+          <input matInput type="number" formControlName="stock_Product" />
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <div class="erp-footer">
+    <button mat-stroked-button type="button" (click)="onReset()">Limpiar</button>
+    <button mat-stroked-button type="button" (click)="onClose()">Cerrar</button>
+    <button mat-flat-button color="primary" type="submit">Buscar</button>
+  </div>
+</form>
+

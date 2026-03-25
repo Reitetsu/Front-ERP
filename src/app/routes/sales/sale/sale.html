@@ -1,0 +1,282 @@
+﻿<mat-card class="page-card">
+  <mat-card-header>
+    <mat-card-title>Ventas</mat-card-title>
+
+    <span class="spacer"></span>
+
+    <button mat-icon-button matTooltip="Venta rÃ¡pida" (click)="openSaleForm('rapida')">
+      <mat-icon>flash_on</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Venta detallada" (click)="openSaleForm('detallada')">
+      <mat-icon>receipt_long</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Ver detalle / pago" [disabled]="!selectedSale" (click)="openDetails()">
+      <mat-icon>visibility</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Pagar e imprimir" [disabled]="!selectedSale" (click)="payAndPrintDirect()">
+      <mat-icon>print</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Eliminar" [disabled]="!selectedSale" (click)="deleteSelectedSale()">
+      <mat-icon>delete</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Buscar" (click)="openSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <mat-drawer-container class="drawer-container">
+      <mat-drawer-content>
+        @if (isFormVisible) {
+          <div class="sale-form-card">
+            <div class="sale-form-head">
+              <h3>{{ saleMode === 'rapida' ? 'Nueva venta rÃ¡pida' : 'Nueva venta detallada' }}</h3>
+              <div class="total-chip">Total: S/. {{ calcularTotalPedidos() | number:'1.2-2' }}</div>
+            </div>
+
+            @if (saleMode === 'detallada') {
+              <div class="row-3">
+                <mat-form-field appearance="outline">
+                  <mat-label>DNI</mat-label>
+                  <input
+                    #dniInput
+                    matInput
+                    [(ngModel)]="persona.dni"
+                    name="persona_dni"
+                    (blur)="searchPersonaByDni()"
+                    (keyup.enter)="searchPersonaByDni()"
+                    (keyup.enter)="onDniEnter()"
+                    autocomplete="off" />
+                  @if (personaEncontradaTexto) {
+                    <mat-hint class="success-inline">{{ personaEncontradaTexto }}</mat-hint>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Celular</mat-label>
+                  <input
+                    #telefonoInput
+                    matInput
+                    [(ngModel)]="persona.telefono"
+                    name="persona_telefono"
+                    (keyup.enter)="onTelefonoEnter()"
+                    autocomplete="off" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>DirecciÃ³n</mat-label>
+                  <input
+                    #direccionInput
+                    matInput
+                    [(ngModel)]="persona.address"
+                    name="persona_address"
+                    (keyup.enter)="onDireccionEnter()"
+                    autocomplete="off" />
+                </mat-form-field>
+              </div>
+
+              @if (mensajePersona) {
+                <div class="warning">{{ mensajePersona }}</div>
+              }
+
+            }
+
+            <div class="code-row">
+              <mat-form-field appearance="outline" class="code-input">
+                <mat-label>CÃ³digo de menÃº</mat-label>
+                <input
+                  #codigoMenuInput
+                  matInput
+                  [(ngModel)]="numeroIngresado"
+                  name="numeroIngresado"
+                  (keyup.enter)="addOrderByCode()"
+                  autocomplete="off" />
+              </mat-form-field>
+
+              <button mat-flat-button color="primary" type="button" (click)="addOrderByCode()">
+                Agregar
+              </button>
+
+              <button mat-stroked-button type="button" (click)="onClearCode()">Limpiar</button>
+            </div>
+
+            <div class="quick-keypad">
+              @for (digit of ['1','2','3','4','5','6','7','8','9','0']; track digit) {
+                <button mat-stroked-button type="button" (click)="onNumericKey(digit)">{{ digit }}</button>
+              }
+            </div>
+
+            <div class="orders-table-wrap">
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th>CÃ³digo</th>
+                    <th>DescripciÃ³n</th>
+                    <th>Cant.</th>
+                    <th>Precio</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (pedido of pedidos; track pedido.menu.id; let i = $index) {
+                    <tr>
+                      <td>{{ pedido.menu.code_Menu }}</td>
+                      <td>{{ pedido.menu.description_Menu }}</td>
+                      <td>
+                        <input
+                          type="number"
+                          min="1"
+                          [ngModel]="pedido.cantidad"
+                          (ngModelChange)="updatePedidoCantidad(i, $event)"
+                          name="cantidad_{{ i }}" />
+                      </td>
+                      <td>S/. {{ pedido.precio | number:'1.2-2' }}</td>
+                      <td>
+                        <button mat-icon-button type="button" (click)="removePedido(i)">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <div class="form-actions">
+              <button mat-flat-button color="primary" type="button" (click)="saveSale()" [disabled]="submittingSale">
+                {{ submittingSale ? 'Guardando...' : 'Guardar venta' }}
+              </button>
+              <button mat-stroked-button type="button" (click)="closeSaleForm()">Cancelar</button>
+            </div>
+          </div>
+        }
+
+        @if (hasActiveSearch()) {
+          <div class="search-summary">
+            <span>{{ getSearchSummary() }}</span>
+            <button mat-stroked-button type="button" (click)="clearSearch()">Limpiar filtros</button>
+          </div>
+        }
+
+        <div class="grid-wrap">
+          <mtx-grid
+            [data]="rows"
+            [columns]="columns"
+            [loading]="loadingSales"
+            [rowSelectable]="true"
+            [hideRowSelectionCheckbox]="true"
+            [multiSelectable]="false"
+            [disableRowClickSelection]="false"
+            [showToolbar]="true"
+            [columnHideable]="true"
+            [columnSortable]="true"
+            [columnResizable]="true"
+            [showPaginator]="false"
+            (rowClick)="onGridSelection($event)"
+            >
+          </mtx-grid>
+        </div>
+      </mat-drawer-content>
+
+      <mat-drawer #drawerEnd mode="side" position="end" class="drawer" [class.drawer-search]="drawerMode === 'search'">
+        <ng-container [ngSwitch]="drawerMode">
+          <app-sale-search
+            *ngSwitchCase="'search'"
+            (search)="onSearch($event)"
+            (close)="closeDrawer()">
+          </app-sale-search>
+
+          <ng-container *ngSwitchCase="'details'">
+            <div class="drawer-header">
+              <h3>Detalle venta #{{ selectedSaleForDrawer?.id }}</h3>
+            </div>
+
+            <div class="drawer-body">
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th>Cant.</th>
+                    <th>Producto</th>
+                    <th>P.Unit</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (detail of selectedSaleDetails; track detail.id) {
+                    <tr>
+                      <td>{{ detail.amount_DetailSale }}</td>
+                      <td>{{ getMenuDescription(detail.menuId) }}</td>
+                      <td>{{ detail.unitPrice_DetailSale | number:'1.2-2' }}</td>
+                      <td>{{ detail.subtotal_DetailSale | number:'1.2-2' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+
+              <div class="totals">
+                <div><strong>Total venta:</strong> S/. {{ totalVenta | number:'1.2-2' }}</div>
+                <div><strong>Total pagado:</strong> S/. {{ totalPagado | number:'1.2-2' }}</div>
+              </div>
+
+              <mat-divider></mat-divider>
+
+              <div class="payment-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Tipo pago</mat-label>
+                  <mat-select [(ngModel)]="selectedTypePayment" name="selectedTypePayment" (selectionChange)="updateAmountByPaymentType()">
+                    @for (paymentType of paymentTypes; track paymentType.id) {
+                      <mat-option [value]="paymentType.id">{{ paymentType.name_PaymentType }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Monto</mat-label>
+                  <input matInput type="number" [(ngModel)]="amountToPay" name="amountToPay" />
+                </mat-form-field>
+
+                <button mat-flat-button color="primary" type="button" (click)="addPaymentLine()">Agregar pago</button>
+              </div>
+
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Monto</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (payment of additionalPayments; track payment.type; let i = $index) {
+                    <tr>
+                      <td>{{ payment.name }}</td>
+                      <td>{{ payment.amount | number:'1.2-2' }}</td>
+                      <td>
+                        <button mat-icon-button type="button" (click)="removePaymentLine(i)">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <div class="drawer-actions">
+              <button mat-flat-button color="primary" type="button" (click)="confirmPaymentsAndPrint()" [disabled]="processingPayments">
+                {{ processingPayments ? 'Procesando...' : 'Pagar e imprimir' }}
+              </button>
+              <button mat-stroked-button type="button" (click)="closeDetails()">Cerrar</button>
+            </div>
+          </ng-container>
+        </ng-container>
+      </mat-drawer>
+    </mat-drawer-container>
+  </mat-card-content>
+</mat-card>
+

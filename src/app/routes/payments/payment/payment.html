@@ -1,0 +1,58 @@
+﻿<mat-card class="page-card">
+  <mat-card-header>
+    <mat-card-title>Pagos</mat-card-title>
+    <span class="spacer"></span>
+
+    <button mat-icon-button matTooltip="Buscar" (click)="openSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="Descargar Excel" (click)="downloadExcel()">
+      <mat-icon>download</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <mat-drawer-container class="drawer-container">
+      <mat-drawer-content>
+        <div class="grid-wrap">
+          <mtx-grid
+            [data]="rows"
+            [columns]="columns"
+            [loading]="loading"
+            [rowSelectable]="true"
+            [hideRowSelectionCheckbox]="true"
+            [multiSelectable]="false"
+            [disableRowClickSelection]="false"
+            [showToolbar]="true"
+            [columnHideable]="true"
+            [columnSortable]="true"
+            [columnResizable]="true"
+            [showPaginator]="true"
+            [pageOnFront]="false"
+            [length]="totalItems"
+            [pageSize]="itemsPerPage"
+            [pageIndex]="currentPage - 1"
+            [pageSizeOptions]="[25, 50, 100]"
+            (rowClick)="onGridSelection($event)"
+            (page)="onGridPageChange($event)">
+          </mtx-grid>
+        </div>
+      </mat-drawer-content>
+
+      <mat-drawer #drawerEnd mode="side" position="end" class="drawer">
+        <ng-container [ngSwitch]="drawerMode">
+          <app-payment-search
+            *ngSwitchCase="'search'"
+            (search)="onSearch($event)"
+            (close)="closeDrawer()">
+          </app-payment-search>
+
+          <div *ngSwitchDefault style="padding: 8px;">
+            Selecciona una accion...
+          </div>
+        </ng-container>
+      </mat-drawer>
+    </mat-drawer-container>
+  </mat-card-content>
+</mat-card>

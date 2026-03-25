@@ -11,7 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
   selector: 'app-user-panel',
   template: `
     <div class="matero-user-panel" routerLink="/profile/overview">
-      <img class="matero-user-panel-avatar" [src]="user()?.avatar" alt="avatar" width="64" />
+      <img class="matero-user-panel-avatar" [src]="user()?.avatar" (error)="onAvatarError($event)" alt="avatar" width="64" />
       <div class="matero-user-panel-info">
         <h4>{{ user()?.name }}</h4>
         <h5>{{ user()?.email }}</h5>
@@ -24,5 +24,12 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class UserPanel {
   private readonly auth = inject(AuthService);
+  readonly defaultAvatar = 'images/avatar-default.jpg';
   user = toSignal(this.auth.user());
+
+  onAvatarError(event: Event): void {
+    const img = event.target as HTMLImageElement | null;
+    if (!img) return;
+    img.src = this.defaultAvatar;
+  }
 }

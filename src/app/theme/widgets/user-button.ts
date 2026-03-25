@@ -12,7 +12,7 @@ import { AuthService, SettingsService } from '@core';
   selector: 'app-user',
   template: `
     <button matIconButton [matMenuTriggerFor]="menu">
-      <img class="avatar" [src]="user()?.avatar" width="24" alt="avatar" />
+      <img class="avatar" [src]="user()?.avatar" (error)="onAvatarError($event)" width="24" alt="avatar" />
     </button>
 
     <mat-menu #menu="matMenu">
@@ -47,6 +47,7 @@ export class UserButton {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly settings = inject(SettingsService);
+  readonly defaultAvatar = 'images/avatar-default.jpg';
 
   user = toSignal(this.auth.user());
 
@@ -59,5 +60,11 @@ export class UserButton {
   restore() {
     this.settings.reset();
     window.location.reload();
+  }
+
+  onAvatarError(event: Event): void {
+    const img = event.target as HTMLImageElement | null;
+    if (!img) return;
+    img.src = this.defaultAvatar;
   }
 }

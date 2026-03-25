@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '@env/environment';
 import { Menu } from '@core';
 import { Token, User } from './interface';
@@ -11,6 +11,7 @@ import { Token, User } from './interface';
 export class LoginService {
   protected readonly http = inject(HttpClient);
   private readonly baseUrl = environment.baseUrl;
+  private readonly defaultAvatar = 'images/avatar-default.jpg';
   login(username: string, password: string, rememberMe = false) {
     return this.http
       .post<any>(`${this.baseUrl}/auth/login`, {
@@ -35,11 +36,21 @@ export class LoginService {
     return this.http.post<any>('/auth/logout', {});
   }
 
-  user() {
-    return this.http.get<User>('/user');
+  user(): Observable<User> {
+    return this.http.get<User>('/user').pipe(
+      map(user => ({
+        ...user,
+        avatar: this.resolveAvatar(user?.avatar),
+      }))
+    );
   }
 
   menu() {
     return this.http.get<{ menu: Menu[] }>('/user/menu').pipe(map(res => res.menu));
+  }
+
+  private resolveAvatar(value: unknown): string {
+    const avatar = value == null ? '' : String(value).trim();
+    return avatar.length > 0 ? avatar : this.defaultAvatar;
   }
 }

@@ -1,0 +1,64 @@
+﻿<form class="erp-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="erp-header">
+    <div class="left">
+      <div class="title">Nueva facility</div>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="erp-body">
+    <div class="section">
+      <div class="grid grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Codigo</mat-label>
+          <input matInput formControlName="code_Facility" autocomplete="off" />
+          <mat-error *ngIf="f.code_Facility.touched && f.code_Facility.hasError('required')">Requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="name_Facility" autocomplete="off" />
+          <mat-error *ngIf="f.name_Facility.touched && f.name_Facility.hasError('required')">Requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="span-2">
+          <mat-label>Descripcion</mat-label>
+          <textarea matInput rows="2" formControlName="description_Facility"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="span-2">
+          <mat-label>Direccion</mat-label>
+          <input matInput formControlName="address_Facility" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Contacto</mat-label>
+          <input matInput formControlName="contact_Facility" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Telefono</mat-label>
+          <input matInput formControlName="phone_Facility" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email_Facility" autocomplete="off" />
+          <mat-error *ngIf="f.email_Facility.touched && f.email_Facility.hasError('email')">Email invalido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo facility</mat-label>
+          <input matInput type="number" formControlName="facilityTypeId" />
+          <mat-error *ngIf="f.facilityTypeId.touched && f.facilityTypeId.invalid">Requerido</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <div class="erp-footer">
+    <button mat-stroked-button type="button" (click)="onCancel()">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit">Guardar</button>
+  </div>
+</form>

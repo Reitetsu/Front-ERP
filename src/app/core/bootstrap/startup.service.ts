@@ -34,8 +34,57 @@ export class StartupService {
   }
 
   private setMenu(menu: Menu[]) {
-    this.menuService.addNamespace(menu, 'menu');
-    this.menuService.set(menu);
+    const safeMenu = [...(menu ?? [])];
+    const hasMenu = safeMenu.some(item => this.normalizeRoute(item.route) === '/menu');
+    const hasFacility = safeMenu.some(item => this.normalizeRoute(item.route) === '/facility');
+    const hasSale = safeMenu.some(item => this.normalizeRoute(item.route) === '/sale');
+    const hasPayment = safeMenu.some(item => this.normalizeRoute(item.route) === '/payment');
+
+    if (!hasMenu) {
+      safeMenu.push({
+        route: '/menu',
+        name: 'menu',
+        type: 'link',
+        icon: 'restaurant_menu',
+      });
+    }
+
+    if (!hasSale) {
+      safeMenu.push({
+        route: '/sale',
+        name: 'sale',
+        type: 'link',
+        icon: 'point_of_sale',
+      });
+    }
+
+    if (!hasFacility) {
+      safeMenu.push({
+        route: '/facility',
+        name: 'facility',
+        type: 'link',
+        icon: 'store',
+      });
+    }
+
+    if (!hasPayment) {
+      safeMenu.push({
+        route: '/payment',
+        name: 'payment',
+        type: 'link',
+        icon: 'payments',
+      });
+    }
+
+    this.menuService.addNamespace(safeMenu, 'menu');
+    this.menuService.set(safeMenu);
+  }
+
+  private normalizeRoute(route: string | undefined): string {
+    if (!route) {
+      return '';
+    }
+    return `/${route.replace(/^\/+|\/+$/g, '')}`;
   }
 
   private setPermissions(user: User) {

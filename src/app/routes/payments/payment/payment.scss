@@ -1,0 +1,47 @@
+﻿:host {
+  display: block;
+  height: 100%;
+}
+
+.page-card {
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+
+mat-card-content {
+  flex: 1;
+  min-height: 0;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.drawer-container {
+  height: 100%;
+}
+
+mat-drawer-content {
+  height: 100%;
+  min-height: 0;
+}
+
+.grid-wrap {
+  height: 100%;
+}
+
+:host ::ng-deep .grid-wrap .mtx-grid {
+  height: 100%;
+}
+
+:host ::ng-deep .grid-wrap .mtx-grid .mat-mdc-table-container {
+  height: 100%;
+  overflow: auto;
+}
+
+:host ::ng-deep .grid-wrap .mtx-grid .mat-mdc-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
